@@ -1,8 +1,9 @@
 package lexer
 
 import (
-	"github.com/ericsolomon/pulsar/token"
 	"testing"
+
+	"github.com/ericsolomon/pulsar/token"
 )
 
 func TestNextToken(t *testing.T) {
@@ -18,6 +19,16 @@ let result = add(x, y);
 
 !-/*5t;
 x < 5 > y;
+
+if (5 < 10) {
+  return true;
+} else {
+  return false;
+}
+
+x == y;
+
+x != y;
 `
 
 	tests := []struct {
@@ -79,12 +90,42 @@ x < 5 > y;
 		{token.IDENT, "y"},
 		{token.SEMICOLON, ";"},
 
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.ELSE, "else"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.FALSE, "false"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+
+		{token.IDENT, "x"},
+		{token.ASSIGN, "="},
+		{token.ASSIGN, "="},
+		{token.IDENT, "y"},
+		{token.SEMICOLON, ";"},
+
+		{token.IDENT, "x"},
+		{token.BANG, "!"},
+		{token.ASSIGN, "="},
+		{token.IDENT, "y"},
+		{token.SEMICOLON, ";"},
+
 		{token.EOF, ""},
 	}
 
 	testLexer := New(testInput)
 	for i, test := range tests {
-		token := testLexer.nextToken()
+		token := testLexer.NextToken()
 
 		if token.Type != test.expectedType {
 			t.Fatalf("test %d failed. Expected token type %q, got %q", i, test.expectedType, token.Type)

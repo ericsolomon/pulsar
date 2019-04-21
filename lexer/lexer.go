@@ -26,14 +26,18 @@ func (lexer *Lexer) readChar() {
 	lexer.readPosition += 1
 }
 
-func (lexer *Lexer) nextToken() token.Token {
+func (lexer *Lexer) NextToken() token.Token {
 	var t token.Token
 
 	lexer.eatWhitespace()
-
 	switch lexer.ch {
 	case '=':
-		t = newToken(token.ASSIGN, lexer.ch)
+		if lexer.peekChar() == '=' {
+			lexer.readChar()
+			t = token.Token{Type: token.EQUAL, Literal: "=="}
+		} else {
+			t = newToken(token.ASSIGN, lexer.ch)
+		}
 	case '+':
 		t = newToken(token.PLUS, lexer.ch)
 	case ',':
@@ -59,7 +63,12 @@ func (lexer *Lexer) nextToken() token.Token {
 	case '-':
 		t = newToken(token.MINUS, lexer.ch)
 	case '!':
-		t = newToken(token.BANG, lexer.ch)
+		if lexer.peekChar() == '=' {
+			lexer.readChar()
+			t = token.Token{Type: token.NOTEQUAL, Literal: "!="}
+		} else {
+			t = newToken(token.BANG, lexer.ch)
+		}
 	case 0:
 		t.Literal = ""
 		t.Type = token.EOF
@@ -83,6 +92,14 @@ func (lexer *Lexer) nextToken() token.Token {
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+func (lexer *Lexer) peekChar() byte {
+	if len(lexer.input) <= lexer.readPosition {
+		return lexer.input[lexer.readPosition]
+	}
+
+	return 0
 }
 
 func (lexer *Lexer) eatWhitespace() {
