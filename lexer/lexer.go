@@ -95,7 +95,7 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 }
 
 func (lexer *Lexer) peekChar() byte {
-	if len(lexer.input) <= lexer.readPosition {
+	if len(lexer.input) >= lexer.readPosition {
 		return lexer.input[lexer.readPosition]
 	}
 
